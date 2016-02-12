@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 
@@ -44,6 +45,17 @@ namespace ImmutabilitySample
         }
     }
 
+    class YetAnotherGreetingActor : ReceiveActor
+    {
+        public YetAnotherGreetingActor()
+        {        
+            Receive<Greeting>(m =>
+            {              
+                Console.WriteLine("YetAnotherGreetingActor: Hello, {0}!", m.Name);
+            });
+        }
+    }
+
     #endregion
 
     class Program
@@ -52,6 +64,7 @@ namespace ImmutabilitySample
         {
             var system = ActorSystem.Create("greetingSystem");
             var greetingActor = system.ActorOf<GreetingActor>("greetingActor");
+            var yetAnotherGreetingActor = system.ActorOf<YetAnotherGreetingActor>("yetAnotherGreetingActor");
 
             var message = new Greeting
             {
@@ -63,6 +76,11 @@ namespace ImmutabilitySample
             greetingActor.Tell(message);
             greetingActor.Tell(message);
             greetingActor.Tell(message);
+
+            //Emulate some delay to make sure that greeting actor will modify muttable message
+            Thread.Sleep(1000);
+
+            yetAnotherGreetingActor.Tell(message);
 
             greetingActor.Tell(immutalbleMessage);
 
