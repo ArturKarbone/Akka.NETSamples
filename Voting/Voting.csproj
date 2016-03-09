@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actors\Messages\BeginVoting.cs" />
+    <Compile Include="Actors\VotingCoordinator.cs" />
     <Compile Include="Actors\VotingActor.cs" />
     <Compile Include="Actors\SimpleVotingActor.cs" />
     <Compile Include="Domain\Talk.cs" />

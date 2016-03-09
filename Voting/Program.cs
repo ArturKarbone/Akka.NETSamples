@@ -17,8 +17,12 @@ namespace Voting
 
             //var votingActor = votingActorSystem.ActorOf<VotingActor>("votingActor");
 
-            var votingProps = Props.Create<VotingActor>();//.WithRouter(new RoundRobinPool(8));
-            var votingActor = votingActorSystem.ActorOf(votingProps, "votingActor");
+            //var votingProps = Props.Create<VotingActor>();//.WithRouter(new RoundRobinPool(8));
+            //var votingActor = votingActorSystem.ActorOf(votingProps, "votingActor");
+
+
+            var votingProps = Props.Create<VotingCoordinatorActor>();
+            var votingActor = votingActorSystem.ActorOf(votingProps, "votingActor");            
 
 
             votingActor.Tell(new BeginVoting(new Talk

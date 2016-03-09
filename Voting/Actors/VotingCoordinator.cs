@@ -1,4 +1,5 @@
 ﻿using Akka.Actor;
+using Akka.Routing;
 using System;
 using System.Threading;
 using Voting.Actors.Messages;
@@ -6,21 +7,15 @@ using Voting.Domain;
 
 namespace Voting.Actors
 {
-    class VotingActor : ReceiveActor
+    class VotingCoordinatorActor : ReceiveActor
     {
         #region Internal State
 
-        Talk Talk { get; set; }
+        IActorRef VotingActor { get; set; }
 
         #endregion
 
-        public VotingActor(Talk talk)
-        {
-            Talk = talk;
-            Become(OpenForVoting);
-        }
-
-        public VotingActor()
+        public VotingCoordinatorActor()
         {
             Become(ClosedForVoting);
         }
@@ -31,7 +26,8 @@ namespace Voting.Actors
         {
             Receive<BeginVoting>(message =>
             {
-                this.Talk = message.Talk;
+                var votingProps = Props.Create<VotingActor>(() => new VotingActor(message.Talk)).WithRouter(new RoundRobinPool(8));              
+                VotingActor = Context.ActorOf(votingProps, "votingActor");
                 Become(OpenForVoting);
             });
         }
@@ -39,10 +35,8 @@ namespace Voting.Actors
         public void OpenForVoting()
         {
             Receive<Vote>(message =>
-            {
-                EmulateLatency();
-                Talk.Votes.Add(message);
-                Console.WriteLine($"Satisfacton: {message.SatisfactionLevel}; Timestamp: {message.TimeStamp}");
+            {               
+                VotingActor.Tell(message);              
             });
         }
 
