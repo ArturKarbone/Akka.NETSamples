@@ -20,7 +20,7 @@ namespace TerminatorSample
                 terminatorActor.Tell("Terminate this system");
 
                 terminatorActor.Tell(new TerminatorActor.Terminate());
-                myActorSystem.AwaitTermination()
+                //myActorSystem.AwaitTermination();
                 await myActorSystem.WhenTerminated;
 
                 Console.WriteLine("Actor System has been terminated");
